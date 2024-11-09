@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earncash</title>
+    <style>
+        /* Basic styles for visibility and layout */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .form-section, .dashboard { display: none; }
+        .active { display: block; }
+        header { display: flex; justify-content: space-between; align-items: center; }
+        .dropdown-menu { display: none; position: absolute; background-color: purple; border: 1px solid #ccc; }
+        .menu-icon:hover + .dropdown-menu { display: block; }
+        .menu-icon { cursor: pointer; }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .user-menu {
+            position: relative;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .dashboard {
+            padding: 20px;
+        }
+        .earnings {
+            margin-bottom: 20px;
+        }
+        .withdrawal-history {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-section button {
+            background-color: #ff5722;
+            margin-top: 10px;
+        }
+        .form-section button:hover {
+            background-color: #e64a19;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Earncash</h1>
+        
+        <div id="registration" class="form-section active">
+            <h2>Register</h2>
+            <form id="register-form">
+                <input type="text" placeholder="Username" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <a href="javascript:void(0);" id="to-login">Login here</a></p>
+        </div>
+
+        <div id="login" class="form-section">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="javascript:void(0);" id="to-register">Register here</a></p>
+            <p><a href="javascript:void(0);" id="forgot-password-link">Forgot Password?</a></p>
+        </div>
+
+        <div id="forgot-password" class="form-section">
+            <h2>Forgot Password</h2>
+            <form id="forgot-password-form">
+                <input type="email" placeholder="Email" required>
+                <button type="submit">Reset Password</button>
+            </form>
+            <p><a href="javascript:void(0);" id="back-to-login">Back to Login</a></p>
+        </div>
+
+        <div id="main" class="dashboard">
+            <header>
+                <div class="logo">Earncash</div>
+                <div class="user-menu">
+                    <div class="menu-icon" onclick="toggleMenu()">≡</div>
+                    <div class="dropdown-menu" id="dropdown-menu">
+                        <a href="javascript:void(0);" id="profile-link">Profile</a>
+                        <a href="javascript:void(0);" id="earnings-link">Earnings</a>
+                        <a href="javascript:void(0);" id="referral-link">Referral</a>
+                        <a href="javascript:void(0);" id="withdrawal-link">Withdrawal</a>
+                        <a href="javascript:void(0);" id="customer-care-link">Customer Care</a>
+                        <a href="javascript:void(0);" id="about-us-link">About Us</a>
+                        <a href="javascript:void(0);" id="settings-link">Settings</a>
+                        <a href="javascript:void(0);" id="logout-button">Logout</a>
+                    </div>
+                </div>
+            </header>
+            <main>
+                <h1>Welcome to your dashboard!</h1>
+                <div class="earnings">
+                    <h2>Your Earnings</h2>
+                    <p id="earnings-amount">$0.000</p>
+                </div>
+            </main>
+        </div>
+
+        <div id="profile" class="form-section">
+            <h2>Your Profile</h2>
+            <p><strong>Username:</strong> <span id="profile-username"></span></p>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Profile ID:</strong> <span id="profile-id"></span></p>
+            <button id="back-to-main-profile">Back to Main</button>
+        </div>
+
+        <div id="referral" class="form-section">
+            <p>Earn 5% on your referral earnings for life</p>
+            <h2>Your Referral Link</h2>
+            <input type="text" id="referral-link-input" readonly>
+            <button id="copy-referral">Copy Link</button>
+            <h3>Your Referrals</h3>
+            <ul id="referral-list"></ul>
+            <h3>Referral Earnings</h3>
+            <p id="referral-earnings">$0.00</p>
+            <button id="back-to-main-referral">Back to Main</button>
+        </div>
+
+        <div id="earnings-section" class="form-section">
+            <h2>Earn by Watching Videos</h2>
+            <button id="watch-video">Watch Video</button>
+            <p id="video-earnings">$0.000 earned from videos.</p>
+            <button id="back-to-main-earnings">Back to Main</button>
+        </div>
+
+        <div id="withdrawal" class="form-section">
+            <h2>Withdrawal</h2>
+            <p>Minimum withdrawal amount is $3.00</p>
+            <input type="number" id="withdrawal-amount" placeholder="Enter amount" min="3.00">
+            <select id="withdrawal-method">
+                <option value="TRX">TRX</option>
+                <option value="TON">TON</option>
+                <option value="LTC">LTC</option>
+            </select>
+            <input type="text" id="withdrawal-address" placeholder="Enter your address">
+            <button id="submit-withdrawal">Submit Withdrawal</button>
+            <p id="withdrawal-status" style="display:none;"></p>
+            <div class="withdrawal-history">
+                <h3>Withdrawal History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawal-history-list">
+                        <!-- Withdrawal history items will be appended here -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="back-to-main-withdrawal">Back to Main</button> <!-- Added Back to Main button -->
+        </div>
+
+        <div id="customer-care" class="form-section">
+            <h2>Contact Customer Care</h2>
+            <p>If you need assistance, please contact us via WhatsApp:</p>
+            <a href="https://wa.me/+2348084997064" target="_blank">
+                <img src="whatsapp-icon.png" alt=">>click Here to contact us"
+                    style="width: 50px; height: 50px;">
+            </a>
+            <button id="back-to-main-customer-care">Back to Main</button>
+        </div>
+
+        <div id="settings" class="form-section">
+            <h2>Settings</h2>
+            <button id="back-to-main-settings">Back to Main</button>
+        </div>
+
+        <div id="about-us" class="form-section">
+            <h2>About Us</h2>
+            <p>Earncash is a platform designed to help you earn money by completing simple tasks and referrals.</p>
+            <button id="back-to-main-about">Back to Main</button>
+        </div>
+    </div>
+
+    <script>
+        let users = {}; // Store users
+        let currentUser = null; // Store current logged-in user
+        let userEarnings = 0; // Store user's earnings
+        let withdrawalHistory = []; // Store withdrawal history
+
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.form-section, .dashboard');
+            sections.forEach(section => section.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Switch between Register and Login
+        document.getElementById('to-login').addEventListener('click', () => {
+            showSection('login');
+        });
+        document.getElementById('to-register').addEventListener('click', () => {
+            showSection('registration');
+        });
+
+        // Switch between Forgot Password and Login
+        document.getElementById('forgot-password-link').addEventListener('click', () => {
+            showSection('forgot-password');
+        });
+        document.getElementById('back-to-login').addEventListener('click', () => {
+            showSection('login');
+        });
+
+        // Handle user registration
+        document.getElementById('register-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = this.querySelector('input[type="text"]').value;
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+
+            if (!users[email]) {
+                users[email] = { username, password, earnings: 0, referrals: [] };
+                alert('Registration successful! You can now log in.');
+                showSection('login');
+            } else {
+                alert('User already exists!');
+            }
+        });
+
+        // Handle user login
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+
+            if (users[email] && users[email].password === password) {
+                currentUser = users[email];
+                userEarnings = currentUser.earnings;
+                showSection('main');
+                updateDashboard();
+            } else {
+                alert('Invalid login credentials');
+            }
+        });
+
+        // Handle forgot password
+        document.getElementById('forgot-password-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            alert('Password reset link has been sent to your email.');
+            showSection('login');
+        });
+
+        // Update the dashboard with current user's earnings
+        function updateDashboard() {
+            document.getElementById('earnings-amount').innerText = `$${userEarnings.toFixed(3)}`;
+            document.getElementById('profile-username').innerText = currentUser.username;
+            document.getElementById('profile-email').innerText = currentUser.email;
+            document.getElementById('profile-id').innerText = currentUser.username; // Just a placeholder for ID
+        }
+
+        // Logout functionality
+        document.getElementById('logout-button').addEventListener('click', function () {
+            currentUser = null;
+            userEarnings = 0;
+            showSection('login');
+        });
+
+        // Withdrawal functionality
+        document.getElementById('submit-withdrawal').addEventListener('click', function () {
+            const amount = parseFloat(document.getElementById('withdrawal-amount').value);
+            const method = document.getElementById('withdrawal-method').value;
+            const address = document.getElementById('withdrawal-address').value;
+
+            if (amount >= 3.00 && amount <= userEarnings) {
+                withdrawalHistory.push({ date: new Date().toLocaleString(), amount, status: 'Pending' });
+                alert('Withdrawal request submitted');
+                document.getElementById('withdrawal-status').innerText = `Requested: $${amount} via ${method}`;
+                document.getElementById('withdrawal-status').style.display = 'block';
+                updateWithdrawalHistory();
+            } else {
+                alert('Insufficient balance or invalid amount');
+            }
+        });
+
+        // Update withdrawal history in the UI
+        function updateWithdrawalHistory() {
+            const historyList = document.getElementById('withdrawal-history-list');
+            historyList.innerHTML = '';
+            withdrawalHistory.forEach(history => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${history.date}</td><td>$${history.amount}</td><td>${history.status}</td>`;
+                historyList.appendChild(row);
+            });
+        }
+
+        // Referral functionality
+        document.getElementById('referral-link-input').value = `https://earncash.com/referral/${currentUser.username}`;
+
+        document.getElementById('copy-referral').addEventListener('click', () => {
+            const referralLink = document.getElementById('referral-link-input');
+            referralLink.select();
+            document.execCommand('copy');
+            alert('Referral link copied!');
+        });
+
+        // Show the referral page
+        document.getElementById('back-to-main-referral').addEventListener('click', function () {
+            showSection('main');
+        });
+
+        // Show the earnings page
+        document.getElementById('back-to-main-earnings').addEventListener('click', function () {
+            showSection('main');
+        });
+
+        // Back to Main functionality for customer care and settings
+        document.getElementById('back-to-main-settings').addEventListener('click', function () {
+            showSection('main');
+        });
+
+        document.getElementById('back-to-main-customer-care').addEventListener('click', function () {
+            showSection('main');
+        });
+
+        document.getElementById('back-to-main-about').addEventListener('click', function () {
+            showSection('main');
+        });
+
+        // Toggle user dropdown menu visibility
+        function toggleMenu() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
